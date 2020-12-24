@@ -11,7 +11,7 @@ import kotlin.reflect.KClass
 class Repository constructor(
     private val resolver:ContentResolver
 ) {
-    inline fun ContentResolver.query (
+    fun ContentResolver.query (
         uri: Uri,
         projection:Array<String>?=null,
         selection:String?=null,
@@ -34,47 +34,58 @@ class Repository constructor(
 
     fun getTypes() {
         resolver.query(
-            uri = Uri.parse("content://examble.test/"),
+            uri = Uri.parse(uri("/")),
             selection = "type"
         )?.let {}
-
     }
 
+    fun getTypeByID(id:String) = doGet(
+        KV::class,
+        ""
+    )
 
-    private fun <T:Any> Cursor.convert( cls:KClass<T>) = ArrayList<T>().also {list->
-        if(moveToFirst()) {
+    fun getBaseUri() = "content://examble.test"
+    private fun uri(path: String)="${getBaseUri()}$path"
+    private fun <T:Any> doGet(
+        cls:KClass<T>,
+        path:String,
+        values:Map<String,String>? = null
+    ) =
+        resolver.query(Uri.parse(uri(path)))?.convert(cls)
+
+
+    private fun <T:Any> Cursor.convert( cls:KClass<T>) = if(moveToFirst()) {
+
+        ArrayList<T>().also {list->
             do {
+                //获取单例
                 val elm = cls.java.newInstance()
+                //循环查找类的字段
                 for (f in cls.java.declaredFields) {
-                    val ano =
-                }
-                list.add(
+                    //检查是否存在@CursorFlied 存在时拿name不存在时拿变量名称
+                    val columnIndex = getColumnIndex(
+                        f.getAnnotation(CursorField::class.java)?.name ?: f.name
+                    )
+                    //检查是否通过当通过时判断类型
+                    if (columnIndex!=-1) when(this.getType(columnIndex)) {
 
-                    cls.java.newInstance().also { instance ->
-                        cls.java.declaredFields.forEach { field->
+                        Cursor.FIELD_TYPE_INTEGER ->
+                            f.setInt(elm,getInt(columnIndex))
 
-                            field.getAnnotation(CursorField::class.java)?.let {ano ->
-                                field.set(instance,
-                                    when(this.getType(getColumnIndex(ano.name))) {
-                                        Cursor.FIELD_TYPE_INTEGER->getString(getColumnIndex(ano.name))
-                                        Cursor.FIELD_TYPE_STRING->getString(getColumnIndex(ano.name))
-                                        Cursor.FIELD_TYPE_NULL -> null
-                                        Cursor.FIELD_TYPE_BLOB -> getBlob(getColumnIndex(ano.name))
-                                        Cursor.FIELD_TYPE_FLOAT->getFloat(getColumnIndex(ano.name))
-                                        else ->null
-                                    }
-                                )
-                            }?: kotlin.run {
+                        Cursor.FIELD_TYPE_STRING ->
+                            f.set(elm,getString(columnIndex))
 
-                            }
-                        }
+                        Cursor.FIELD_TYPE_BLOB ->
+                            f.set(elm,getBlob(columnIndex))
+
+                        Cursor.FIELD_TYPE_FLOAT ->
+                            f.setFloat(elm,getFloat(columnIndex))
                     }
-                )
-                cls.java.fields.forEach {
-
                 }
+                list.add(elm)
             }while (moveToNext())
+            close()
         }
-    }
+    } else null
 
 }
