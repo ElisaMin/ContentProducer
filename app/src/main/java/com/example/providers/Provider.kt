@@ -6,8 +6,6 @@ import android.content.Context
 import android.database.Cursor
 import android.net.Uri
 import androidx.room.*
-import androidx.sqlite.db.SupportSQLiteQuery
-import java.lang.Exception
 
 class Provider : ContentProvider() {
     /**
@@ -51,18 +49,18 @@ class Provider : ContentProvider() {
 
     }
 
-    object POJO {
-        data class BookInfo(
-            val bookName:String,
-            val publisher:String,
-            val type:String
-        )
-    }
+//    object POJO {
+//        data class BookInfo(
+//            val bookName:String,
+//            val publisher:String,
+//            val type:String
+//        )
+//    }
 
     object DAO {
         @Dao interface BookInfoDao{
-            @Query("SELECT b.name bookName,p.name publisher,t.name type FROM BOOKS b,PUBLISHERS p,book_types t WHERE type_id =t.id and publisher_id = type_id")
-            fun selectPojo(): List<POJO.BookInfo>
+//            @Query("SELECT b.name bookName,p.name publisher,t.name type FROM BOOKS b,PUBLISHERS p,book_types t WHERE type_id =t.id and publisher_id = type_id")
+//            fun selectPojo(): List<POJO.BookInfo>
 
             @Insert
             fun addBook(bookInf: Table.BookInf)
