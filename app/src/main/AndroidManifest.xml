@@ -11,7 +11,7 @@
         android:theme="@style/Theme.Providers">
 
         <provider
-            android:name=".Provider"
+            android:name=".p.Provider"
             android:authorities="examble.test"
             android:enabled="true"
             android:exported="true" />

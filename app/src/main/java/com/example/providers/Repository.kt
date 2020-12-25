@@ -26,15 +26,14 @@ class Repository constructor(
 
 
     data class KV(
-        @CursorField("")
         var id: Int = 0,
         var name:String?=null
     )
 
     annotation class CursorField(val name:String)
-    annotation class FieldName(val name:String)
+//    annotation class FieldName(val name:String)
 
-    fun getTypes() {
+    private fun getTypes() {
         resolver.query(
             uri = uri("/"),
             selection = "type"
@@ -60,10 +59,10 @@ class Repository constructor(
         val values = ContentValues()
 
         for (f in instance::class.java.declaredFields) {
-            val colName  = f.getAnnotation(FieldName::class.java)?.name ?: f.name
+            val colName  = f.getAnnotation(CursorField::class.java)?.name ?: f.name
             f.type.javaClass
             val colValue = f.get(instance::class.java)
-            values.put(colName,colValue.toString())
+            values.put(colName,colValue?.toString())
         }
 
         return resolver.insert (uri("/"), values)?.getQueryParameter("success") == "1"

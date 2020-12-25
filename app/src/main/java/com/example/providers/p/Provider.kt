@@ -1,4 +1,4 @@
-package com.example.providers
+package com.example.providers.p
 
 import android.content.ContentProvider
 import android.content.ContentValues
@@ -6,24 +6,10 @@ import android.content.Context
 import android.database.Cursor
 import android.net.Uri
 import androidx.room.*
-import com.example.providers.Provider.Databases.Companion.rem
+import com.example.providers.p.Provider.Databases.Companion.rem
 
 class Provider : ContentProvider() {
 
-    object Testing {
-
-        fun String.加个ABC():String {
-            return this + "/abc"
-        }
-
-        @JvmStatic fun main(args: Array<String>) {
-
-            val bl = "ddd"
-            val blAbc = bl.加个ABC()
-
-            println(blAbc)
-        }
-    }
 
     /**
      * 目标: bookName typeName publisherName
@@ -31,6 +17,7 @@ class Provider : ContentProvider() {
     object Table {
 
         @Entity(tableName = "book_types")
+
         data class BookType(
              @PrimaryKey(autoGenerate = true) val id:Int = 0,
              @ColumnInfo(name = "name") var name:String
@@ -84,7 +71,7 @@ class Provider : ContentProvider() {
             @Insert
             fun addPublisher(publisher: Table.Publisher)
             @Insert
-            fun addType(type:Table.BookType)
+            fun addType(type: Table.BookType)
         }
 
     }
@@ -99,14 +86,14 @@ class Provider : ContentProvider() {
     )
     abstract class Databases :RoomDatabase() {
 
-        abstract fun dao():DAO.BookInfoDao
+        abstract fun dao(): DAO.BookInfoDao
 
          companion object {
              val dao get() = instance.dao()
              val instance get() =  _instance!!
-             private var _instance:Databases?=null
-             fun getInstance(context: Context):Databases {
-                 if (_instance==null)
+             private var _instance: Databases?=null
+             fun getInstance(context: Context): Databases {
+                 if (_instance ==null)
                      _instance = Room.databaseBuilder(
                          context,
                          Databases::class.java,
@@ -117,14 +104,8 @@ class Provider : ContentProvider() {
              fun selectAllFromTable(table:String) = instance.query("select * from $table ", null)
 
              fun selectTypeNameByID(id: String) {
-                 // select name from book_types where id = *id / *id=20
-                 // select name from book_types where id = 20;
-                 // select name from book_types where id = ?; 替换？成为20
-                 // query () 方法 可以 替换值并查询
                  instance.query("select name from book_types where id = ?", arrayOf(id))
-
              }
-             //"aaa".rem(null)
              operator fun String.rem(args: Array<String>?):Cursor {
                  return instance.query(this,args)
              }
@@ -149,35 +130,43 @@ class Provider : ContentProvider() {
 
     inline operator fun ContentValues.invoke(crossinline block:()->String): String? = this.getAsString(block()).takeIf { !it.isNullOrEmpty() }
     operator fun ContentValues.rem(key:String): Int? = this.getAsInteger(key).takeIf { it>0 }
-    operator fun ContentValues?.plus(other:String) = 0.1
+
+    sealed class Status{
+        data class Success<T> (val result:T) : Status()
+        data class Error(val message:String): Status()
+    }
+    class InsertTemplate <T> constructor(
+            val path:String,
+            
+    ) {
+        
+    }
 
     override fun insert(uri: Uri, values: ContentValues?): Uri {
-        0.1.rem(1)
-        0.1 % 1
         return values?.let {
             values{"bookName"}?.let {
                 fun getOrThrow(key: String) = values % key ?: throw NoSuchFieldException("id")
                 Databases.dao.addBook(
-                    Table.BookInf(
-                        name = it,
-                        id =  getOrThrow("id"),
-                        typeID = getOrThrow("type_id"),
-                        publisherID = getOrThrow("publisher_id")
-                    )
+                        Table.BookInf(
+                                name = it,
+                                id = getOrThrow("id"),
+                                typeID = getOrThrow("type_id"),
+                                publisherID = getOrThrow("publisher_id")
+                        )
                 )
             }
             values{"publisherName"}?.let {
                 Databases.dao.addPublisher(
-                    Table.Publisher(
-                        name = it
-                    )
+                        Table.Publisher(
+                                name = it
+                        )
                 )
             }
             values{"typeName"}?.let {
                 Databases.dao.addType(
-                    Table.BookType(
-                        name = it
-                    )
+                        Table.BookType(
+                                name = it
+                        )
                 )
             }
 
@@ -209,7 +198,7 @@ class Provider : ContentProvider() {
                 if (projection.contains("id")) "select * from book_types where id = ?" % arrayOf(getArg("id"))
                 else Databases.selectAllFromTable("type")
             }
-            "publisher" ->Databases.selectAllFromTable("publishers")
+            "publisher" -> Databases.selectAllFromTable("publishers")
             else -> null
         }}
         else null
