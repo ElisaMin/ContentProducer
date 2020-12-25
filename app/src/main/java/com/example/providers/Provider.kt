@@ -6,8 +6,25 @@ import android.content.Context
 import android.database.Cursor
 import android.net.Uri
 import androidx.room.*
+import com.example.providers.Provider.Databases.Companion.rem
 
 class Provider : ContentProvider() {
+
+    object Testing {
+
+        fun String.加个ABC():String {
+            return this + "/abc"
+        }
+
+        @JvmStatic fun main(args: Array<String>) {
+
+            val bl = "ddd"
+            val blAbc = bl.加个ABC()
+
+            println(blAbc)
+        }
+    }
+
     /**
      * 目标: bookName typeName publisherName
      */
@@ -97,12 +114,34 @@ class Provider : ContentProvider() {
                      ).allowMainThreadQueries().build()
                  return instance
              }
+             fun selectAllFromTable(table:String) = instance.query("select * from $table ", null)
+
+             fun selectTypeNameByID(id: String) {
+                 // select name from book_types where id = *id / *id=20
+                 // select name from book_types where id = 20;
+                 // select name from book_types where id = ?; 替换？成为20
+                 // query () 方法 可以 替换值并查询
+                 instance.query("select name from book_types where id = ?", arrayOf(id))
+
+             }
+             //"aaa".rem(null)
+             operator fun String.rem(args: Array<String>?):Cursor {
+                 return instance.query(this,args)
+             }
+
+
          }
     }
 
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<String>?): Int {
         TODO("Implement this to handle requests to delete one or more rows")
     }
+    // hello ^name
+    // "hello %s"%name
+    // System.out.printf("hello %s",name)
+    // "hello $name"
+
+
 
     override fun getType(uri: Uri): String {
         return "vnd.android.cursor.dir/abc"
@@ -110,11 +149,14 @@ class Provider : ContentProvider() {
 
     inline operator fun ContentValues.invoke(crossinline block:()->String): String? = this.getAsString(block()).takeIf { !it.isNullOrEmpty() }
     operator fun ContentValues.rem(key:String): Int? = this.getAsInteger(key).takeIf { it>0 }
+    operator fun ContentValues?.plus(other:String) = 0.1
 
     override fun insert(uri: Uri, values: ContentValues?): Uri {
+        0.1.rem(1)
+        0.1 % 1
         return values?.let {
             values{"bookName"}?.let {
-                fun getOrThrow(key: String) = values%key ?: throw NoSuchFieldException("id")
+                fun getOrThrow(key: String) = values % key ?: throw NoSuchFieldException("id")
                 Databases.dao.addBook(
                     Table.BookInf(
                         name = it,
@@ -151,12 +193,26 @@ class Provider : ContentProvider() {
     override fun query(
         uri: Uri, projection: Array<String>?, selection: String?,
         selectionArgs: Array<String>?, sortOrder: String?
-    ): Cursor {
-        return Databases.instance.query ((when(selection) {
-            "type" -> "select * from types"
-            "publisher" -> "select * from publisher "
-        else->"SELECT b.name bookName,p.name publisher,t.name type FROM BOOKS b,PUBLISHERS p,book_types t WHERE type_id =t.id and publisher_id = type_id"
-        }),null)
+    ): Cursor? {
+
+        fun getArg(key: String) = selectionArgs!![projection!!.indexOf(key)]
+        return if (projection==null && selectionArgs==null)
+            when(selection) {
+                "type" -> "select * from types" % null
+                "publisher" -> "select * from publisher " % null
+                else->"SELECT b.name bookName,p.name publisher,t.name type FROM BOOKS b,PUBLISHERS p,book_types t WHERE type_id =t.id and publisher_id = type_id" % null
+            }
+        else if (projection==null || selectionArgs==null) throw IllegalArgumentException("为null")
+        //当不为空时如果有
+        else if (projection.contains("table")) {  when (getArg("table")) {
+            "type" -> {
+                if (projection.contains("id")) "select * from book_types where id = ?" % arrayOf(getArg("id"))
+                else Databases.selectAllFromTable("type")
+            }
+            "publisher" ->Databases.selectAllFromTable("publishers")
+            else -> null
+        }}
+        else null
     }
 
     override fun update(

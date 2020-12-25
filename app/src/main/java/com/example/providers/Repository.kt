@@ -1,6 +1,7 @@
 package com.example.providers
 
 import android.content.ContentResolver
+import android.content.ContentValues
 import android.database.Cursor
 import android.net.Uri
 import androidx.core.database.getStringOrNull
@@ -19,9 +20,9 @@ class Repository constructor(
         sortOder:String?=null
     ):Cursor? = this.query(uri, projection,selection,selectArgs,sortOder)
 
-    val types by lazy {
-        MutableStateFlow("")
-    }
+//    val types by lazy {
+//        MutableStateFlow("")
+//    }
 
 
     data class KV(
@@ -31,27 +32,54 @@ class Repository constructor(
     )
 
     annotation class CursorField(val name:String)
+    annotation class FieldName(val name:String)
 
     fun getTypes() {
         resolver.query(
-            uri = Uri.parse(uri("/")),
+            uri = uri("/"),
             selection = "type"
         )?.let {}
     }
 
     fun getTypeByID(id:String) = doGet(
         KV::class,
-        ""
+        "/type",
+        values = mapOf(
+            "id" to id
+        )
     )
 
     fun getBaseUri() = "content://examble.test"
-    private fun uri(path: String)="${getBaseUri()}$path"
+    private fun uri(path: String)=Uri.parse("${getBaseUri()}$path")
+
+
+    private fun <T:Any> doInsert (
+        table:String,
+        instance:T,
+    ):Boolean {
+        val values = ContentValues()
+
+        for (f in instance::class.java.declaredFields) {
+            val colName  = f.getAnnotation(FieldName::class.java)?.name ?: f.name
+            f.type.javaClass
+            val colValue = f.get(instance::class.java)
+            values.put(colName,colValue.toString())
+        }
+
+        return resolver.insert (uri("/"), values)?.getQueryParameter("success") == "1"
+    }
+
     private fun <T:Any> doGet(
         cls:KClass<T>,
         path:String,
         values:Map<String,String>? = null
-    ) =
-        resolver.query(Uri.parse(uri(path)))?.convert(cls)
+    ) {
+        resolver.query(
+            uri(path),
+            projection = values?.keys?.toTypedArray(),
+            selectArgs = values?.values?.toTypedArray()
+        )?.convert(cls)
+    }
 
 
     private fun <T:Any> Cursor.convert( cls:KClass<T>) = if(moveToFirst()) {
