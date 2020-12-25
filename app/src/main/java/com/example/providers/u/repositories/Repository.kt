@@ -1,12 +1,10 @@
-package com.example.providers
+package com.example.providers.u.repositories
 
 import android.content.ContentResolver
 import android.content.ContentValues
 import android.database.Cursor
 import android.net.Uri
-import androidx.core.database.getStringOrNull
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
+import com.example.providers.annotations.Field
 import kotlin.reflect.KClass
 
 class Repository constructor(
@@ -30,8 +28,7 @@ class Repository constructor(
         var name:String?=null
     )
 
-    annotation class CursorField(val name:String)
-//    annotation class FieldName(val name:String)
+    //    annotation class FieldName(val name:String)
 
     private fun getTypes() {
         resolver.query(
@@ -59,7 +56,7 @@ class Repository constructor(
         val values = ContentValues()
 
         for (f in instance::class.java.declaredFields) {
-            val colName  = f.getAnnotation(CursorField::class.java)?.name ?: f.name
+            val colName  = f.getAnnotation(Field::class.java)?.name ?: f.name
             f.type.javaClass
             val colValue = f.get(instance::class.java)
             values.put(colName,colValue?.toString())
@@ -91,7 +88,7 @@ class Repository constructor(
                 for (f in cls.java.declaredFields) {
                     //检查是否存在@CursorFlied 存在时拿name不存在时拿变量名称
                     val columnIndex = getColumnIndex(
-                        f.getAnnotation(CursorField::class.java)?.name ?: f.name
+                        f.getAnnotation(Field::class.java)?.name ?: f.name
                     )
                     //检查是否通过当通过时判断类型
                     if (columnIndex!=-1) when(this.getType(columnIndex)) {
