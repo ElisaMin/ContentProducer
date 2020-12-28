@@ -13,7 +13,9 @@ import kotlin.reflect.KCallable
 import kotlin.reflect.KFunction
 
 @Path("/put")
-class InsertController :ForInsert() {
+class InsertController constructor (
+    baseUri:String,
+) :ForInsert(baseUri) {
 
     private val template = InsertTemplate("${Provider.baseUri}/result")
 

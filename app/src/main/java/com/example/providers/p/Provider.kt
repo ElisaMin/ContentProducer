@@ -41,6 +41,7 @@ class Provider : ContentProvider() {
         return true
     }
 
+
     override fun query(
         uri: Uri, projection: Array<String>?, selection: String?,
         selectionArgs: Array<String>?, sortOrder: String?

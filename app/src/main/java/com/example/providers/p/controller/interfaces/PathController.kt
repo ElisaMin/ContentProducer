@@ -15,15 +15,9 @@ import kotlin.reflect.full.findAnnotation
  * @property baseUri
  * @constructor Create empty Path controller
  */
-open class PathController <T>{
-//    constructor() {
-////        if(baseUri ==null) baseUri = this::class.findAnnotation<BaseUri>()?.uri ?: throw NullPointerException("on ${this.javaClass.name}")
-//    }
-//    constructor(uri: String) {
-//        this.baseUri= uri
-//    }
-//    annotation class BaseUri(val uri:String)
-    lateinit var baseUri:String
+open class PathController <T> constructor(
+    var baseUri:String
+) {
 
     private val _map = HashMap<String, KFunction<T>>()
     val map:Map<String,KFunction<T>> get() = _map

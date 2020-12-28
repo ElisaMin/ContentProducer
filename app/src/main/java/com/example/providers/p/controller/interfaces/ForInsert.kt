@@ -10,7 +10,7 @@ import com.example.providers.p.utils.Path.Companion.paths
  *
  * @constructor Create empty For insert
  */
-open class ForInsert:PathController<Uri>() {
+open class ForInsert(baseUri:String):PathController<Uri>(baseUri) {
 
     fun insert(uri: Uri, contentValues: ContentValues):Uri? {
         val paths = uri.paths

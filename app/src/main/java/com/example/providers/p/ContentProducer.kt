@@ -1,7 +1,10 @@
 package com.example.providers.p
 
 import android.content.ContentProvider
+import android.content.ContentValues
+import android.net.Uri
 import com.example.providers.p.controller.interfaces.PathController
+import com.example.providers.p.dao.Dao
 
 /**
  * Content producer
@@ -11,8 +14,17 @@ import com.example.providers.p.controller.interfaces.PathController
  */
 abstract class ContentProducer constructor(
         private val authority:String,
+
 )  : ContentProvider() {
+
     private val baseUri = "content://$authority"
+    abstract val dao:Dao
+
+    private val controllers by lazy {
+        ControllerFactory(baseUri,dao)
+    }
+
+
 
 
     init {
@@ -27,48 +39,7 @@ abstract class ContentProducer constructor(
 
         }
     }
+
+    override fun insert(uri: Uri, values: ContentValues?): Uri?
+        = values?.let { controllers.insert.insert(uri,it) }
 }
-//data class b(var b: String)
-//class a (
-//        b: String
-//){
-//    lateinit var d:String
-//    val f = b("f")
-//    lateinit var e:a
-//}
-
-//fun getA() {
-//    a::class.constructors.forEach {
-////        if (it.parameters.size == 1 && it.parameters[0])
-//    }
-//}
-//fun main() {
-//    val aa =a("2")
-//    a::class.declaredMemberProperties.forEach {
-//
-//        println(it.getter)
-//
-//        when(it) {
-//            is KMutableProperty<*> -> {
-//                println(it.returnType)
-//            }
-//            else -> {
-//                (it.get(aa) as b).also { it.b = "aaa"} .let(::println)
-//            }
-//        }
-//    }
-//        a::class.let {  cls ->
-//            cls.constructors.forEach {
-////                if (it.parameters.size==1 && it.parameters[0].type.equals())
-//
-//
-//
-//                it.parameters[0].type.let {
-//                    it == String::class.starProjectedType
-//                }.let(::println)
-//
-//
-//            }
-//        }
-
-//}
