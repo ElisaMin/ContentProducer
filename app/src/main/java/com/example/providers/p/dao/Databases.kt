@@ -36,10 +36,6 @@ abstract class Databases : RoomDatabase() {
              return instance
          }
          fun selectAllFromTable(table:String) = instance.query("select * from $table ", null)
-
-         fun selectTypeNameByID(id: String) {
-             instance.query("select name from book_types where id = ?", arrayOf(id))
-         }
          operator fun String.rem(args: Array<String>?): Cursor {
              return instance.query(this,args)
          }

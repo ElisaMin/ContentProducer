@@ -21,8 +21,10 @@ class InsertController :ForInsert() {
     fun addType(values: ContentValues): Uri = template.runCatching {
         db.dao.addType(values.convert())
     }
+
     @Path("/publisher")
     fun addPublisher(values: ContentValues) = template.runCatching {
         db.dao.addPublisher(values.convert())
     }
+
 }

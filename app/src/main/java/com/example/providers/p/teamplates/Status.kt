@@ -1,7 +1,12 @@
 package com.example.providers.p.teamplates
 
-sealed class Status{
-
+/**
+ * Status
+ *
+ * @param T
+ * @constructor Create empty Status
+ */
+sealed class  Status {
     data class Success<T> (val result:T) : Status()
     data class Error(val message:String?,val exceptionType:String?=null): Status()
 

@@ -23,10 +23,6 @@ class Provider : ContentProvider() {
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<String>?): Int {
         TODO("Implement this to handle requests to delete one or more rows")
     }
-    // hello ^name
-    // "hello %s"%name
-    // System.out.printf("hello %s",name)
-    // "hello $name"
 
 
 
@@ -35,8 +31,7 @@ class Provider : ContentProvider() {
         return "vnd.android.cursor.dir/abc"
     }
 
-    inline operator fun ContentValues.invoke(crossinline block:()->String): String? = this.getAsString(block()).takeIf { !it.isNullOrEmpty() }
-    operator fun ContentValues.rem(key:String): Int? = this.getAsInteger(key).takeIf { it>0 }
+
 
     private val insertController = InsertController()
     override fun insert(uri: Uri, values: ContentValues?): Uri? = if (values==null) insertController.insert(uri) else insertController.insert(uri,values)
@@ -50,7 +45,6 @@ class Provider : ContentProvider() {
         uri: Uri, projection: Array<String>?, selection: String?,
         selectionArgs: Array<String>?, sortOrder: String?
     ): Cursor? {
-
         fun getArg(key: String) = selectionArgs!![projection!!.indexOf(key)]
         return if (projection==null && selectionArgs==null)
             when(selection) {
