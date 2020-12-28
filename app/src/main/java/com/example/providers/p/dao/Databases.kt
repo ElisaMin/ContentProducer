@@ -18,9 +18,10 @@ import com.example.providers.p.dao.entities.Publisher
         BookType::class
     ]
 )
-abstract class Databases : RoomDatabase() {
+abstract class Databases : RoomDatabase(),com.example.providers.p.dao.Dao {
 
     abstract fun dao(): BookInfoDao
+
 
      companion object {
          val dao get() = instance.dao()

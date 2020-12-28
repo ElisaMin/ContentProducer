@@ -2,10 +2,14 @@ package com.example.providers.p.controller.interfaces
 
 import android.database.Cursor
 import com.example.providers.annotations.Path
+import com.example.providers.p.dao.Dao
 
 
-open class ForQuery:PathController<Cursor>() {
-
+open class ForQuery constructor(
+    val dao: Dao,
+    baseUri:String,
+) :PathController<Cursor>(baseUri) {
+    operator fun String.rem(args: Array<Any?>) = dao.query(this,args)
 
 }
 
