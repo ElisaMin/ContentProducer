@@ -29,5 +29,4 @@ class InsertTemplate constructor(
             is Status.Error -> "$resultUri/failed?msg=${result.message}&type=${result.exceptionType}"
         }.toUri()
     }
-
 }

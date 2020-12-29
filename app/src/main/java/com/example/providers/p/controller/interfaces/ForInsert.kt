@@ -14,6 +14,7 @@ open class ForInsert(baseUri:String):PathController<Uri>(baseUri) {
 
     fun insert(uri: Uri, contentValues: ContentValues):Uri? {
         val paths = uri.paths
+
         return if (paths.asList().first() == rootPath) map[paths.asList().last()] ?.call(this,contentValues)
         else null
     }
@@ -21,7 +22,3 @@ open class ForInsert(baseUri:String):PathController<Uri>(baseUri) {
 
 }
 
-//fun main(args: Array<String>) {
-//    fun dropOrSelf(it: String):String = if (it.startsWith("/")) it.drop(1) else it
-//    println("/path".let(::dropOrSelf))
-//}

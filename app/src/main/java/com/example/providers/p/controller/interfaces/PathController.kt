@@ -27,8 +27,11 @@ open class PathController <T> constructor(
     private fun dropOrSelf(it: String):String = if (it.startsWith("/")) it.drop(1) else it
 
     init {
+        //base uri and throw
         if (baseUri.endsWith("/")) throw IllegalAccessException("不能以/结尾")
+        //循环查找所有的function
         for (m in this::class.members) {
+            //存储在map
             m.findAnnotation<Path>()?.let {
                 kotlin.runCatching {
                     m as KFunction<T>
@@ -37,6 +40,7 @@ open class PathController <T> constructor(
                 }
             }
         }
+        //添加所有的Path
         resignPath()?.let(_map::putAll)
     }
 
