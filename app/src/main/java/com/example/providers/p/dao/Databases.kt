@@ -18,12 +18,18 @@ import com.example.providers.p.dao.entities.Publisher
         BookType::class
     ]
 )
-abstract class Databases : RoomDatabase(),com.example.providers.p.dao.Dao {
+abstract class Databases : RoomDatabase(){
 
     abstract fun dao(): BookInfoDao
 
 
-     companion object {
+    object Dao : com.example.providers.p.dao.Dao {
+        override fun query(sql: String, args: Array<Any?>): Cursor {
+            return instance.query(sql,args)
+        }
+    }
+
+    companion object {
          val dao get() = instance.dao()
          val instance get() =  _instance!!
          private var _instance: Databases?=null
@@ -36,7 +42,6 @@ abstract class Databases : RoomDatabase(),com.example.providers.p.dao.Dao {
                  ).allowMainThreadQueries().build()
              return instance
          }
-         fun selectAllFromTable(table:String) = instance.query("select * from $table ", null)
          operator fun String.rem(args: Array<String>?): Cursor {
              return instance.query(this,args)
          }

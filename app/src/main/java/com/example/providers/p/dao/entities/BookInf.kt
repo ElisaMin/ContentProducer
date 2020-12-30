@@ -7,17 +7,17 @@ import androidx.room.PrimaryKey
 
 @Entity(
     tableName = "books",
-    foreignKeys = [
-        ForeignKey(
-            entity = BookType::class,
-            parentColumns = ["id"],
-            childColumns = ["type_id"]
-        ), ForeignKey(
-            entity = Publisher::class,
-            parentColumns = ["id"],
-            childColumns = ["publisher_id"]
-        )
-    ]
+//    foreignKeys = [
+//        ForeignKey(
+//            entity = BookType::class,
+//            parentColumns = ["id"],
+//            childColumns = ["type_id"]
+//        ), ForeignKey(
+//            entity = Publisher::class,
+//            parentColumns = ["id"],
+//            childColumns = ["publisher_id"]
+//        )
+//    ]
 )
 data class BookInf(
     @PrimaryKey(autoGenerate = true) val id:Int = 0,

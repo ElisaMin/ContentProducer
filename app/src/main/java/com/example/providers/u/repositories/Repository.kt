@@ -4,7 +4,13 @@ import android.content.ContentResolver
 import android.content.ContentValues
 import android.database.Cursor
 import android.net.Uri
+import androidx.room.Insert
 import com.example.providers.annotations.Field
+import com.example.providers.annotations.Path
+import com.example.providers.u.utils.convert
+import java.lang.reflect.InvocationHandler
+import java.lang.reflect.Method
+import java.lang.reflect.Proxy
 import kotlin.reflect.KClass
 
 class Repository constructor(
@@ -23,6 +29,13 @@ class Repository constructor(
 //    }
 
 
+
+
+
+    fun getUserByName(name:String)
+        = doGet(KV::class,)
+
+
     data class KV(
         var id: Int = 0,
         var name:String?=null
@@ -30,24 +43,30 @@ class Repository constructor(
 
     //    annotation class FieldName(val name:String)
 
-    private fun getTypes() {
-        resolver.query(
-            uri = uri("/"),
-            selection = "type"
-        )?.let {}
-    }
 
-    fun getTypeByID(id:String) = doGet(
-        KV::class,
-        "/type",
-        values = mapOf(
+    fun getTypeByID(id:String)
+        = doGet<KV>(
+            path = "getTypeID",
             "id" to id
         )
-    )
+
 
     fun getBaseUri() = "content://examble.test"
     private fun uri(path: String)=Uri.parse("${getBaseUri()}$path")
 
+
+    annotation class GET
+    annotation class PUT
+    annotation class UPDATE
+    annotation class DEL
+
+    interface Transporter{
+        @GET @Path("getUserByName")
+        fun getUserByName(name:String):KV
+    }
+    fun getInstance() {
+
+    }
 
     private fun <T:Any> doInsert (
         table:String,
@@ -65,9 +84,13 @@ class Repository constructor(
         return resolver.insert (uri("/"), values)?.getQueryParameter("success") == "1"
     }
 
+    private fun <T:Any> doGet(path: String,vararg map:Pair<String,String?>) {
+
+    }
+
     private fun <T:Any> doGet(
         cls:KClass<T>,
-        path:String,
+        path:String = "",
         values:Map<String,String>? = null
     ) {
         resolver.query(
@@ -76,40 +99,19 @@ class Repository constructor(
             selectArgs = values?.values?.toTypedArray()
         )?.convert(cls)
     }
-
-
-    private fun <T:Any> Cursor.convert( cls:KClass<T>) = if(moveToFirst()) {
-
-        ArrayList<T>().also {list->
-            do {
-                //获取单例
-                val elm = cls.java.newInstance()
-                //循环查找类的字段
-                for (f in cls.java.declaredFields) {
-                    //检查是否存在@CursorFlied 存在时拿name不存在时拿变量名称
-                    val columnIndex = getColumnIndex(
-                        f.getAnnotation(Field::class.java)?.name ?: f.name
-                    )
-                    //检查是否通过当通过时判断类型
-                    if (columnIndex!=-1) when(this.getType(columnIndex)) {
-
-                        Cursor.FIELD_TYPE_INTEGER ->
-                            f.setInt(elm,getInt(columnIndex))
-
-                        Cursor.FIELD_TYPE_STRING ->
-                            f.set(elm,getString(columnIndex))
-
-                        Cursor.FIELD_TYPE_BLOB ->
-                            f.set(elm,getBlob(columnIndex))
-
-                        Cursor.FIELD_TYPE_FLOAT ->
-                            f.setFloat(elm,getFloat(columnIndex))
-                    }
-                }
-                list.add(elm)
-            }while (moveToNext())
-            close()
-        }
-    } else null
-
 }
+
+interface A {
+    fun a():String
+}
+//TODO("创建一个对象在a函数返回'refrection' ")
+
+fun getA():A = Proxy.newProxyInstance(A::class.java.classLoader, arrayOf(A::class.java))
+    result@{ proxy, method:Method, args ->
+        return@result "refrection"
+    } as A
+
+fun main() {
+    getA().a().let(::println)
+}
+

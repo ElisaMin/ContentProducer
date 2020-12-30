@@ -18,7 +18,7 @@ class  Provider  : ContentProducer <InsertController,QueryController,ForDelete,A
         "examble.test"
 )  {
     override val dao: Dao
-        get() = Databases.instance
+        get() = Databases.Dao
 
 
     override fun getType(uri: Uri): String {
