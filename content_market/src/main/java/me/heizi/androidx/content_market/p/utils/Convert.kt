@@ -1,7 +1,7 @@
 package me.heizi.androidx.content_market.p.utils
 
 import android.content.ContentValues
-import me.heizi.androidx.content_market.annotations.Field
+import me.heizi.androidx.content_market.annotation.Field
 
 /**
  * Convert

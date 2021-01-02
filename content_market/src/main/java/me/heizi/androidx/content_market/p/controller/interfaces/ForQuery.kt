@@ -2,7 +2,6 @@ package me.heizi.androidx.content_market.p.controller.interfaces
 
 import android.database.Cursor
 import android.net.Uri
-import com.androidx.providers.p.controller.interfaces.PathController
 import me.heizi.androidx.content_market.p.dao.Dao
 import me.heizi.androidx.content_market.p.teamplates.QueryTemplate
 import me.heizi.androidx.content_market.p.utils.Path.Companion.paths

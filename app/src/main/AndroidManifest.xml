@@ -12,7 +12,7 @@
         tools:ignore="AllowBackup">
 
 <!--        <provider-->
-<!--            android:name=".p.Provider"-->
+<!--            android:name=".p.me.heizi.androidx.content_market.p.Provider"-->
 <!--            android:authorities="examble.test"-->
 <!--            android:enabled="true"-->
 <!--            android:exported="true" />-->

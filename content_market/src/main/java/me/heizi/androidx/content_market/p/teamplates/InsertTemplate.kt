@@ -2,7 +2,7 @@ package me.heizi.androidx.content_market.p.teamplates
 
 import android.net.Uri
 import androidx.core.net.toUri
-import me.heizi.androidx.content_market.annotations.Path
+import me.heizi.androidx.content_market.annotation.Path
 import me.heizi.androidx.content_market.p.teamplates.interfaces.Template
 import kotlin.reflect.full.findAnnotation
 

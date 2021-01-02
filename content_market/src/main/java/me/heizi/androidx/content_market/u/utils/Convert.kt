@@ -1,7 +1,7 @@
 package me.heizi.androidx.content_market.u.utils
 
 import android.database.Cursor
-import me.heizi.androidx.content_market.annotations.Field
+import me.heizi.androidx.content_market.annotation.Field
 import kotlin.reflect.KClass
 
 /**

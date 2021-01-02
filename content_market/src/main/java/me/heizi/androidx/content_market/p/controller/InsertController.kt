@@ -1,6 +1,6 @@
 package me.heizi.androidx.content_market.p.controller
 
-import me.heizi.androidx.content_market.annotations.Path
+import me.heizi.androidx.content_market.annotation.Path
 import me.heizi.androidx.content_market.p.controller.interfaces.ForInsert
 import me.heizi.androidx.content_market.p.teamplates.InsertTemplate
 

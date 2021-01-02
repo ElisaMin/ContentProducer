@@ -1,6 +1,6 @@
-package com.androidx.providers.p.controller.interfaces
+package me.heizi.androidx.content_market.p.controller.interfaces
 
-import me.heizi.androidx.content_market.annotations.Path
+import me.heizi.androidx.content_market.annotation.Path
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
 
