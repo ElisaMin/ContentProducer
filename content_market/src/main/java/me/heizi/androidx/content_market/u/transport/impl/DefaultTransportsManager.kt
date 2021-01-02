@@ -2,7 +2,7 @@
 package me.heizi.androidx.content_market.u.transport.impl
 
 import android.content.ContentResolver
-import me.heizi.androidx.content_market.annotations.GET
+import me.heizi.androidx.content_market.annotation.GET
 import me.heizi.androidx.content_market.u.transport.Transporter
 import me.heizi.androidx.content_market.u.transport.TransportsManager
 import me.heizi.androidx.content_market.u.transport.Truck
@@ -17,7 +17,7 @@ import kotlin.reflect.KClass
  * [TransportsManager] 实现
  */
 @Suppress("UNCHECKED_CAST")
-private class DefaultTransportsManager constructor (
+class DefaultTransportsManager constructor (
         contentResolver: ContentResolver,
         baseUri: String
 ) : TransportsManager {
