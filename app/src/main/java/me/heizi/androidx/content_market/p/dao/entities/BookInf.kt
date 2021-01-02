@@ -1,8 +1,7 @@
-package com.example.providers.p.dao.entities
+package me.heizi.androidx.content_market.p.dao.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
 @Entity(
