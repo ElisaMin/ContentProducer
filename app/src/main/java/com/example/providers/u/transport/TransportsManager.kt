@@ -11,10 +11,11 @@ import kotlin.reflect.KClass
  */
 interface TransportsManager {
 
-    /**
-     * 索要封装对象
-     */
-    val contentResolver:ContentResolver
+    companion object {
+
+    }
+
+    val truck:Truck
 
     /**
      * Resign transport

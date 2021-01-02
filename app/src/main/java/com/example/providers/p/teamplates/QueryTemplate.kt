@@ -44,7 +44,7 @@ class QueryTemplate constructor(
         override fun getColumnName(columnIndex: Int): String="error"
         override fun close() {}
         //move or place
-        override fun getPosition(): Int = -1
+        override fun getPosition(): Int = -2
         override fun getCount(): Int = -1
         override fun move(offset: Int): Boolean =false
         override fun moveToPosition(position: Int): Boolean =false
